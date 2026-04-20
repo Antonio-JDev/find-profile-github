@@ -27,9 +27,45 @@
                 <input type="button" value="Buscar" id="btn-search">
             </header>
 
-            <div class="profile-results"></div>
+            <div class="profile-results hide">
+                <p class="status-message hide"></p>
+
+                <section class="profile-data hide">
+                    <div class="info">
+                        <img id="profile-avatar" src="" alt="Avatar do usuario">
+
+                        <div class="data">
+                            <h1 id="profile-name"></h1>
+                            <p id="profile-login"></p>
+                            <p id="profile-bio"></p>
+                        </div>
+                    </div>
+
+                    <div class="counters">
+                        <div>
+                            <span id="profile-followers">0</span>
+                            <h4>Seguidores</h4>
+                        </div>
+                        <div>
+                            <span id="profile-following">0</span>
+                            <h4>Seguindo</h4>
+                        </div>
+                        <div>
+                            <span id="profile-repos">0</span>
+                            <h4>Repositorios</h4>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <p><strong>Localizacao:</strong> <span id="profile-location">Nao informado</span></p>
+                        <p><strong>Empresa:</strong> <span id="profile-company">Nao informado</span></p>
+                        <p><strong>Site:</strong> <a id="profile-blog" href="#" target="_blank" rel="noopener noreferrer">Nao informado</a></p>
+                    </div>
+                </section>
+            </div>
         </section>
     </main>
+    <script src="src/js/index.js"></script>
 </body>
 
 </html>
