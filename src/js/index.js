@@ -1,3 +1,8 @@
+import {
+  getGitHubUserByUsername,
+  getGitHubUserRepositoriesByUsername,
+} from "./githubApi.js";
+
 const inputSearch = document.getElementById("input-search");
 const buttonSearch = document.getElementById("btn-search");
 const profileResults = document.querySelector(".profile-results");
@@ -14,8 +19,11 @@ const profileRepos = document.getElementById("profile-repos");
 const profileLocation = document.getElementById("profile-location");
 const profileCompany = document.getElementById("profile-company");
 const profileBlog = document.getElementById("profile-blog");
+const repositoriesList = document.getElementById("repositories-list");
+const repositoriesEmpty = document.getElementById("repositories-empty");
+const themeToggleButton = document.getElementById("btn-theme");
 
-const GITHUB_API_URL = "https://api.github.com/users/";
+const THEME_STORAGE_KEY = "github-profile-theme";
 
 function showMessage(message) {
   statusMessage.textContent = message;
@@ -71,18 +79,64 @@ function fillUserProfile(user) {
   profileResults.classList.remove("hide");
 }
 
-async function fetchGitHubUser(username) {
-  const response = await fetch(`${GITHUB_API_URL}${encodeURIComponent(username)}`);
+function createRepositoryListItem(repository) {
+  const listItem = document.createElement("li");
+  const repositoryLink = document.createElement("a");
+  const repositoryName = document.createElement("h4");
+  const repositoryMeta = document.createElement("i");
 
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error("Usuario nao encontrado.");
-    }
+  repositoryLink.href = repository.html_url;
+  repositoryLink.target = "_blank";
+  repositoryLink.rel = "noopener noreferrer";
 
-    throw new Error("Nao foi possivel buscar os dados agora.");
+  repositoryName.textContent = repository.name;
+  repositoryMeta.textContent = `${repository.language || "Sem linguagem"} - ★ ${repository.stargazers_count}`;
+
+  repositoryLink.append(repositoryName, repositoryMeta);
+  listItem.append(repositoryLink);
+
+  return listItem;
+}
+
+function fillRepositories(repositories) {
+  repositoriesList.replaceChildren();
+
+  if (!repositories.length) {
+    repositoriesEmpty.classList.remove("hide");
+    return;
   }
 
-  return response.json();
+  repositoriesEmpty.classList.add("hide");
+
+  repositories.forEach((repository) => {
+    const repositoryItem = createRepositoryListItem(repository);
+    repositoriesList.append(repositoryItem);
+  });
+}
+
+function applyTheme(theme) {
+  const isDarkTheme = theme === "dark";
+  document.body.classList.toggle("dark-theme", isDarkTheme);
+  themeToggleButton.textContent = isDarkTheme ? "Tema Light" : "Tema Dark";
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+
+  if (savedTheme === "dark") {
+    applyTheme("dark");
+    return;
+  }
+
+  applyTheme("light");
+}
+
+function toggleTheme() {
+  const isDarkTheme = document.body.classList.contains("dark-theme");
+  const nextTheme = isDarkTheme ? "light" : "dark";
+
+  applyTheme(nextTheme);
+  localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
 }
 
 async function handleSearch() {
@@ -96,10 +150,15 @@ async function handleSearch() {
   showLoading();
 
   try {
-    const userData = await fetchGitHubUser(username);
+    const [userData, repositoriesData] = await Promise.all([
+      getGitHubUserByUsername(username),
+      getGitHubUserRepositoriesByUsername(username),
+    ]);
+
     fillUserProfile(userData);
+    fillRepositories(repositoriesData);
   } catch (error) {
-    showMessage(error.message);
+    showMessage(error instanceof Error ? error.message : "Erro ao buscar usuario.");
   }
 }
 
@@ -109,3 +168,6 @@ inputSearch.addEventListener("keydown", (event) => {
     handleSearch();
   }
 });
+
+themeToggleButton.addEventListener("click", toggleTheme);
+loadTheme();

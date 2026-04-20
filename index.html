@@ -21,6 +21,7 @@
         <section class="container">
             <header>
                 <h2>Buscar Usuário</h2>
+                <button id="btn-theme" class="theme-toggle" type="button" aria-label="Alternar tema">Tema Dark</button>
                 <p class="search-hint">Digite o nome de usuário do GitHub e tenha acesso aos dados do perfil</p>
                 <input type="text" id="input-search" placeholder="Digite o nome do usuário no GitHub">
                 
@@ -61,11 +62,17 @@
                         <p><strong>Empresa:</strong> <span id="profile-company">Nao informado</span></p>
                         <p><strong>Site:</strong> <a id="profile-blog" href="#" target="_blank" rel="noopener noreferrer">Nao informado</a></p>
                     </div>
+
+                    <section class="repositories">
+                        <h3>Repositorios recentes</h3>
+                        <p id="repositories-empty" class="hide">Nenhum repositorio publico encontrado.</p>
+                        <ul id="repositories-list"></ul>
+                    </section>
                 </section>
             </div>
         </section>
     </main>
-    <script src="src/js/index.js"></script>
+    <script type="module" src="src/js/index.js"></script>
 </body>
 
 </html>
